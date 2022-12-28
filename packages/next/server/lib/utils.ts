@@ -1,3 +1,5 @@
+import { dotenv } from './dotenv'
+import { findUpSync } from './dotenv/find-up'
 import type arg from 'next/dist/compiled/arg/index.js'
 
 export function printAndExit(message: string, code = 1) {
@@ -18,6 +20,13 @@ export function getNodeOptionsWithoutInspect() {
 export function getPort(args: arg.Result<arg.Spec>): number {
   if (typeof args['--port'] === 'number') {
     return args['--port']
+  }
+
+  if (args['--readDotEnv']) {
+    const envPath = findUpSync('.env')
+    if (envPath) {
+      dotenv({ path: envPath })
+    }
   }
 
   const parsed = process.env.PORT && parseInt(process.env.PORT, 10)

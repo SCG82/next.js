@@ -15,6 +15,7 @@ const nextStart: cliCommand = (argv) => {
     '--port': Number,
     '--hostname': String,
     '--keepAliveTimeout': Number,
+    '--readDotEnv': Boolean,
 
     // Aliases
     '-h': '--help',
@@ -43,10 +44,11 @@ const nextStart: cliCommand = (argv) => {
       If no directory is provided, the current directory will be used.
 
       Options
-        --port, -p      A port number on which to start the application
-        --hostname, -H  Hostname on which to start the application (default: 0.0.0.0)
+        --port, -p          A port number on which to start the application
+        --hostname, -H      Hostname on which to start the application (default: 0.0.0.0)
         --keepAliveTimeout  Max milliseconds to wait before closing inactive connections
-        --help, -h      Displays this message
+        --readDotEnv        Read .env file before starting the application
+        --help, -h          Displays this message
     `)
     process.exit(0)
   }

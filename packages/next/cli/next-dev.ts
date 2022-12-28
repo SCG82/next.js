@@ -79,6 +79,7 @@ const nextDev: cliCommand = async (argv) => {
     '--port': Number,
     '--hostname': String,
     '--turbo': Boolean,
+    '--readDotEnv': Boolean,
 
     // To align current messages with native binary.
     // Will need to adjust subcommand later.
@@ -114,6 +115,7 @@ const nextDev: cliCommand = async (argv) => {
       Options
         --port, -p      A port number on which to start the application
         --hostname, -H  Hostname on which to start the application (default: 0.0.0.0)
+        --readDotEnv    Read .env file before starting the application
         --help, -h      Displays this message
     `)
     process.exit(0)
