@@ -15,7 +15,7 @@ let combinedEnv: Env | undefined = undefined
 let cachedLoadedEnvFiles: LoadedEnvFiles = []
 let previousLoadedEnvFiles: LoadedEnvFiles = []
 
-type Log = {
+export type Log = {
   info: (...args: any[]) => void
   error: (...args: any[]) => void
 }
@@ -78,15 +78,34 @@ export function processEnv(
   return Object.assign(process.env, parsed)
 }
 
+/**
+ * Array of .env filenames to be loaded, in order of precedence
+ * @param mode Node.js environment mode (development, production, test)
+ */
+export function getDotEnvFilenames(
+  mode: 'development' | 'production' | 'test'
+) {
+  return [
+    `.env.${mode}.local`,
+    // Don't include `.env.local` for `test` environment since normally
+    // you expect tests to produce the same results for everyone
+    ...(mode !== 'test' ? ['.env.local'] : []),
+    `.env.${mode}`,
+    '.env',
+  ]
+}
+
+export interface EnvConfig {
+  combinedEnv: Env
+  loadedEnvFiles: LoadedEnvFiles
+}
+
 export function loadEnvConfig(
   dir: string,
   dev?: boolean,
   log: Log = console,
   forceReload = false
-): {
-  combinedEnv: Env
-  loadedEnvFiles: LoadedEnvFiles
-} {
+): EnvConfig {
   if (!initialEnv) {
     initialEnv = Object.assign({}, process.env)
   }
@@ -100,15 +119,7 @@ export function loadEnvConfig(
 
   const isTest = process.env.NODE_ENV === 'test'
   const mode = isTest ? 'test' : dev ? 'development' : 'production'
-  const dotenvFiles = [
-    `.env.${mode}.local`,
-    // Don't include `.env.local` for `test` environment
-    // since normally you expect tests to produce the same
-    // results for everyone
-    mode !== 'test' && `.env.local`,
-    `.env.${mode}`,
-    '.env',
-  ].filter(Boolean) as string[]
+  const dotenvFiles = getDotEnvFilenames(mode)
 
   for (const envFile of dotenvFiles) {
     // only load .env if the user provided has an env config file
