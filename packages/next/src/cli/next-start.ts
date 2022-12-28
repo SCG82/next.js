@@ -16,11 +16,14 @@ const nextStart: CliCommand = (argv) => {
     '--port': Number,
     '--hostname': String,
     '--keepAliveTimeout': Number,
+    '--readDotEnv': Boolean,
 
     // Aliases
     '-h': '--help',
     '-p': '--port',
     '-H': '--hostname',
+    '-k': '--keepAliveTimeout',
+    '-e': '--readDotEnv',
   }
   let args: arg.Result<arg.Spec>
   try {
@@ -44,17 +47,18 @@ const nextStart: CliCommand = (argv) => {
       If no directory is provided, the current directory will be used.
 
       Options
-        --port, -p      A port number on which to start the application
-        --hostname, -H  Hostname on which to start the application (default: 0.0.0.0)
-        --keepAliveTimeout  Max milliseconds to wait before closing inactive connections
-        --help, -h      Displays this message
+        -p, --port              A port number on which to start the application
+        -H, --hostname          Hostname on which to start the application (default: 0.0.0.0)
+        -k, --keepAliveTimeout  Max milliseconds to wait before closing inactive connections
+        -e, --readDotEnv        Read .env file before starting the application
+        -h, --help              Displays this message
     `)
     process.exit(0)
   }
 
   const dir = getProjectDir(args._[0])
   const host = args['--hostname'] || '0.0.0.0'
-  const port = getPort(args)
+  const port = getPort(args, { dir, log: Log })
 
   const keepAliveTimeoutArg: number | undefined = args['--keepAliveTimeout']
   if (

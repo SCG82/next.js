@@ -112,6 +112,7 @@ const nextDev: CliCommand = async (argv) => {
     '--help': Boolean,
     '--port': Number,
     '--hostname': String,
+    '--readDotEnv': Boolean,
     '--turbo': Boolean,
 
     // To align current messages with native binary.
@@ -123,6 +124,7 @@ const nextDev: CliCommand = async (argv) => {
     '-h': '--help',
     '-p': '--port',
     '-H': '--hostname',
+    '-e': '--readDotEnv',
   }
   let args: arg.Result<arg.Spec>
   try {
@@ -146,9 +148,10 @@ const nextDev: CliCommand = async (argv) => {
       If no directory is provided, the current directory will be used.
 
       Options
-        --port, -p      A port number on which to start the application
-        --hostname, -H  Hostname on which to start the application (default: 0.0.0.0)
-        --help, -h      Displays this message
+        -p, --port        A port number on which to start the application
+        -H, --hostname    Hostname on which to start the application (default: 0.0.0.0)
+        -e, --readDotEnv  Read .env file before starting the application
+        -h, --help        Displays this message
     `)
     process.exit(0)
   }
@@ -178,7 +181,7 @@ const nextDev: CliCommand = async (argv) => {
     }
   }
 
-  const port = getPort(args)
+  const port = getPort(args, { dir, log: Log })
   // If neither --port nor PORT were specified, it's okay to retry new ports.
   const allowRetry =
     args['--port'] === undefined && process.env.PORT === undefined
